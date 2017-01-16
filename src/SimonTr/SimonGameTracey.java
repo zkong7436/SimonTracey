@@ -1,15 +1,16 @@
 package SimonTr;
 
-import guiPractice.GUIApplication;
+import guiPractice.GuiApplication;
+import guiPractice.Screen;
 
-public class SimonGameTracey extends GUIApplication {
+public class SimonGameTracey extends GuiApplication {
 
 	public SimonGameTracey() {
 		super();
 	}
 
 	@Override
-	protected void initScreen() {
+	public void initScreen() {
 		SimonScreenTracey sim = new SimonScreenTracey(getWidth(), getHeight());
 		setScreen(sim);
 	}

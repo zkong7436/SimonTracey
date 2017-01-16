@@ -16,12 +16,10 @@ public class Progress extends Component implements ProgressInterfaceTracey {
 	private String sequence;
 	private boolean gameOver;
 	
-	// Colors selections for Game Over box
 	private int redOver = 46;
 	private int greenOver = 53;
 	private int blueOver = 63;
 	
-	// Color selections for during game box
 	private int redOn = 178;
 	private int greenOn = 207;
 	private int blueOn = 255;
@@ -36,7 +34,7 @@ public class Progress extends Component implements ProgressInterfaceTracey {
 	}
 
 	public void setRound(int r) {
-		round = "Round# " + r;
+		round = "Round " + r;
 		update();
 	}
 
@@ -74,7 +72,7 @@ public class Progress extends Component implements ProgressInterfaceTracey {
 		g.setColor(new Color(redOver,greenOver,blueOver));
 		g.fillRect(0, 0, WIDTH, HEIGHT);
 		g.setColor(Color.white);
-		String gameEnd = "GAME OVER! RESTART!";
+		String gameEnd = "You've lost.";
 		g.drawString(gameEnd, (WIDTH - fm.stringWidth(gameEnd))/2, 20);
 		g.drawString(sequence, (WIDTH - fm.stringWidth(sequence))/2, 40);
 	}

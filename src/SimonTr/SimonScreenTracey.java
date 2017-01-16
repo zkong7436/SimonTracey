@@ -7,11 +7,14 @@ import java.util.List;
 import SimonTr.ButtonInterfaceTracey;
 import SimonTr.SimonScreenTracey;
 import SimonTr.ButtonInterfaceTracey;
+import SimonTr.Progress;
+import SimonTr.SimonScreenTracey;
+import SimonTr.ButtonInterfaceTracey;
 import SimonTr.Random;
 import guiPractice.components.Action;
 import guiPractice.components.TextLabel;
 import guiPractice.components.Visible;
-import guiPractice.sampleGames.ClickableScreen;
+import guiPractice.components.ClickableScreen;
 
 public class SimonScreenTracey extends ClickableScreen implements Runnable {
 
@@ -33,17 +36,57 @@ public class SimonScreenTracey extends ClickableScreen implements Runnable {
 
 	@Override
 	public void run() {
-		
+		label.setText("");
+		nextRound();
 
 	}
+	
+	public void nextRound() {
+		acceptingInput = false;
+		roundNumber++;
+		sequence.add(randomMove());
+		progress.setRound(roundNumber);
+		progress.setSequenceSize(sequence.size());
+		changeText("Simon's Turn");
+		label.setText("");
+		playSequence();
+		changeText("Your Turn");
+		acceptingInput = true;
+		sequenceIndex = 0;
+	}
+	
+	private void changeText(String string) {
+		
+		try{
+			label.setText(string);
+			Thread.sleep(230);
+		}catch(InterruptedException e){
+			e.printStackTrace();
+		}
+		
+	}
+	
+	private void playSequence() {
+		ButtonInterfaceTracey b = null;
+		for(int i=0;i<sequence.size();i++){
+			if(b!=null)b.dim();
+			b = sequence.get(i).getButton();
+			b.highlight();
+			try {
+				Thread.sleep((long)(2000*(2.0/(roundNumber+2))));
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		b.dim();
+	}
 
-	@Override
 	public void initAllObjects(ArrayList<Visible> viewObjects) {
 		
 		sequence = new ArrayList<MoveInterfaceTracey>();
 		addButtons(viewObjects);
 		progress = getProgress();
-		label = new TextLabel(150,230,60,60,"Go.");
+		label = new TextLabel(220,175,300,40,"Go.");
 		//add 2 moves to start
 		lastSelectedButton = -1;
 		sequence.add(randomMove());
@@ -71,7 +114,7 @@ public class SimonScreenTracey extends ClickableScreen implements Runnable {
 		/**
 		Placeholder until partner finishes implementation of ProgressInterface
 		*/
-		return null;
+		return new Progress();
 	}
 
 	private void addButtons(ArrayList<Visible> viewObjects) {
@@ -81,35 +124,38 @@ public class SimonScreenTracey extends ClickableScreen implements Runnable {
 		for(int i=0; i<numberOfButtons; i++){
 			button[i] = getAButton();//create the button, modified by partner
 			button[i].setColor(colors[i]);
-			button[i].setX(160+(int)(100*Math.cos(i*2*Math.PI/(numberOfButtons))));
-			button[i].setY(250-(int)(100*Math.sin(i*2*Math.PI/(numberOfButtons))));
+			button[i].setX(250+(int)(100*Math.cos(i*2*Math.PI/(numberOfButtons))));
+			button[i].setY(200-(int)(100*Math.sin(i*2*Math.PI/(numberOfButtons))));
 			final ButtonInterfaceTracey b = button[i];
 			b.dim();
 			b.setAction(new Action(){
-				public void act(){
+				public void act() {
+					Thread blink = new Thread(new Runnable(){
+						public void run() {
+							b.highlight();
+							try {
+								Thread.sleep(400);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+							b.dim();
+						}
+							
+					});
+					
+					blink.start();
+					
 					if(acceptingInput && sequence.get(sequenceIndex).getButton() == b){
 						sequenceIndex++;
-					}else if(acceptingInput){
+					}
+					else if(acceptingInput){
 						progress.gameOver();
 						return;
 					}
-					
 					if(sequenceIndex == sequence.size()){
 						Thread nextRound = new Thread(SimonScreenTracey.this);
 						nextRound.start();
 					}
-				}
-			});
-			Thread blink = new Thread(new Runnable(){
-
-				public void run() {
-					b.highlight();
-					try {
-						Thread.sleep(400);
-					}catch(InterruptedException e) {
-						e.printStackTrace();
-					}
-					b.dim();
 				}
 
 			});
@@ -119,7 +165,12 @@ public class SimonScreenTracey extends ClickableScreen implements Runnable {
 	}
 
 	private ButtonInterfaceTracey getAButton() {
-		return new SimonButton();
+		return new ButtonSimon();
+	}
+
+	public void initAllObjects(List<Visible> viewObjects) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

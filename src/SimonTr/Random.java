@@ -1,7 +1,5 @@
 package SimonTr;
 
-import SimonTr.ButtonInterfaceTracey;
-
 public class Random implements MoveInterfaceTracey {
 
 	@Override
